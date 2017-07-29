@@ -6,6 +6,7 @@
 </head>
 <body>
 <p><em>Psst: have a look at the JavaScript Console</em> 💁</p>
+
 <script>
     // Get your shorts on - this is an array workout!
     // ## Array Cardio Day 1
@@ -67,14 +68,32 @@
 
     // 6. create a list of Boulevards in Paris that contain 'de' anywhere in the name
     // https://en.wikipedia.org/wiki/Category:Boulevards_in_Paris
-    //TODO: fetch
+    fetch('https://en.wikipedia.org/w/api.php?origin=*&' +
+        'action=query&list=categorymembers&' +
+        'cmtitle=Category:Boulevards_in_Paris&format=json&cmlimit=200', {
+        mode: 'cors'
+    })
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            } else {
+                throw res;
+            }
+        })
+        .then(resJ => {
+            const blvd = resJ.query.categorymembers.map(c => c.title).filter(t => t.includes('de'));
+
+            console.log("Boulevards in Paris with 'de':");
+            console.log(blvd);
+        })
+        .catch(console.error);
 
 
     // 7. sort Exercise
     // Sort the people alphabetically by last name
     const byName = people.sort((a, b) => {
-        const [aLast, aFirst] = a.split(','),
-            [bLast, bFirst] = b.split(',');//TODO: [a, _] syntax?
+        const [aLast,] = a.split(','),
+            [bLast,] = b.split(',');
 
         return aLast > bLast ? 1 : -1;
     });
