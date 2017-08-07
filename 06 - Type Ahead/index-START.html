@@ -1,22 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Type Ahead 👀</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Type Ahead 👀</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <form class="search-form">
+<form class="search-form">
     <input type="text" class="search" placeholder="City or State">
     <ul class="suggestions">
-      <li>Filter for a city</li>
-      <li>or a state</li>
+        <li>Filter for a city</li>
+        <li>or a state</li>
     </ul>
-  </form>
+</form>
 <script>
-const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    function numberWithCommas(x) {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    }
 
+    function findMatches(value, places) {
+        const r = new RegExp(value, 'gi');
+
+        return places.filter(p => r.test(p.city) || r.test(p.state));
+    }
+
+    function updateSuggestions(value, suggestionsElement, places) {
+        const suggestions = findMatches(value, places)
+            .map(p => {
+                const r = new RegExp(value, 'gi'),
+                    cityLabel = `${p.city}, ${p.state}`,
+                    highlight = el => el.replace(r, `<span class="hl">${value}</span>`);
+
+                return `<li>
+                            <span class="name">${highlight(cityLabel)}</span>
+                            <span class="population">${numberWithCommas(p.population)}</span>
+                        </li>`;
+            });
+
+        suggestionsElement.innerHTML = suggestions.join('');
+    }
+
+    const endpoint = 'https://gist.githubusercontent.com/Miserlou/c5cd8364bf9b2420bb29/raw/2bf258763cdddd704f8ffd3ea9a3e81d25e2c6f6/cities.json';
+    const places = [];
+    const search = document.querySelector(`.search`),
+        suggestions = document.querySelector(`.suggestions`);
+
+
+    fetch(endpoint)
+        .then(blob => blob.json())
+        .then(data => places.push(...data));
+
+    search.addEventListener('keyup', e => updateSuggestions(e.target.value, suggestions, places));
 </script>
-  </body>
+</body>
 </html>
