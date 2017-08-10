@@ -1,18 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>HTML5 Canvas</title>
+    <meta charset="UTF-8">
+    <title>HTML5 Canvas</title>
 </head>
 <body>
 <canvas id="draw" width="800" height="800"></canvas>
 <script>
+
+    function draw(e, state, ctx) {
+
+        if (!state.isDrawing) return;
+
+        const x = e.offsetX,
+            y = e.offsetY;
+
+        if (state.currentX !== x || state.currentY !== y) {
+            ctx.beginPath();
+            ctx.moveTo(state.currentX, state.currentY);
+
+            if (ctx.lineWidth <= Math.abs(state.multiplier) || ctx.lineWidth > 50) state.multiplier = -state.multiplier;
+
+            ctx.lineWidth += state.multiplier;
+            ctx.strokeStyle = `hsl(${Math.floor(360/50*ctx.lineWidth)}, 100%, 50%)`;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+
+            state.currentX = x;
+            state.currentY = y;
+        }
+    }
+
+    function init(ctx) {
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
+        ctx.lineWidth = 50;
+    }
+
+    const canvas = document.getElementById('draw'),
+        ctx = canvas.getContext('2d'),
+        state = {
+            isDrawing: false,
+            currentX: -1,
+            currentY: -1,
+            multiplier: -1
+        };
+
+
+    init(ctx);
+
+    canvas.addEventListener('mousedown', e => {
+        state.isDrawing = true;
+        [state.currentX, state.currentY] = [e.offsetX, e.offsetY];
+    });
+    document.addEventListener('mouseup', e => state.isDrawing = false);
+    canvas.addEventListener('mousemove', e => draw(e, state, ctx));
 </script>
 
 <style>
-  html, body {
-    margin:0;
-  }
+    html, body {
+        margin: 0;
+    }
 </style>
 
 </body>
