@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
 </head>
 <body>
 
@@ -143,6 +144,7 @@
 </div>
 
 <script>
+    // this debounce somehow invokes func on the leading edge instead of trailing
     function debounce(func, wait = 20, immediate = true) {
         var timeout;
         return function () {
@@ -157,8 +159,6 @@
             if (callNow) func.apply(context, args);
         };
     }
-
-    const first = document.getElementById('first');
 
     function inViewportByClientRect(el) {
         // is top half of the element visible?
@@ -184,10 +184,7 @@
     }
 
     const images = document.querySelectorAll(`.slide-in`),
-        checkImages = debounce(() => {
-            console.log(`first is ${inViewportByScrollCoords(first)}`);//TODO: why shows false when fast scroll
-            images.forEach(slideIn);
-        }, 50);
+        checkImages = _.debounce(() => images.forEach(slideIn), 50);
 
     window.addEventListener('scroll', checkImages)
 
