@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>JS Reference VS Copy</title>
+    <meta charset="UTF-8">
+    <title>JS Reference VS Copy</title>
 </head>
 <body>
 
-  <script>
+<script>
     // start with strings, numbers and booleans
 
     // Let's say we have an array
@@ -25,28 +25,48 @@
     // Why? It's because that is an array reference, not an array copy. They both point to the same array!
 
     // So, how do we fix this? We take a copy instead!
+    const team = Array.from(players);
+    team[2] = 'team';
 
     // one way
+    const team1 = players.slice();
+    team1[2] = 'team1';
 
     // or create a new array and concat the old one in
+    const team2 = [].concat(players);
+    team2[2] = 'team2';
 
     // or use the new ES6 Spread
+    const team3 = [...players];
+    team3[2] = 'team3';
 
     // now when we update it, the original one isn't changed
+    console.clear();
+    console.log(players);
+    console.log(team);
+    console.log(team1);
+    console.log(team2);
+    console.log(team3);
 
     // The same thing goes for objects, let's say we have a person object
 
     // with Objects
+    const name = {first: 'some', last: 'last', shallow: {field: false}};
 
     // and think we make a copy:
+    console.log(name);
 
     // how do we take a copy instead?
+    const name1 = Object.assign({}, name, {lang: 'en'});
 
     // We will hopefully soon see the object ...spread
+    //    const name2 = {...name};
 
     // Things to note - this is only 1 level deep - both for Arrays and Objects. lodash has a cloneDeep method, but you should think twice before using it.
-
-  </script>
+    name1.shallow.field = true;
+    console.log(name1);
+    console.log(name);
+</script>
 
 </body>
 </html>
