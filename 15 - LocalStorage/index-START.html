@@ -27,29 +27,48 @@
 
 <script>
 
-    function populateList(container, items) {
-        return container.innerHTML = items.map((i, index) => `
-        <li>
-            <input type="checkbox" data-index=${index} id="item${index}" ${i.done ? 'checked' : ''} />
-            <label for="item${index}">${i.text}</label>
-        </li>`).join('');
+    function toggleDone(el, model) {
+        const ind = el.dataset.index;
+        model[ind].done = !model[ind].done;
+        localStorage.setItem('items', JSON.stringify(model));
+    }
+
+    function renderView(view, model) {
+        view.innerHTML = '';
+        model.forEach((item, index) => {
+            const li = document.createElement('li'),
+                id = `item${index}`;
+
+            li.innerHTML = `
+                <input type="checkbox" data-index=${index} id="${id}" ${item.done ? 'checked' : ''} />
+                <label for="${id}">${item.text}</label>
+            `;
+
+            const input = li.querySelector(`#${id}`);
+            input.addEventListener('click', e => {
+                toggleDone(input, model);
+                renderView(view, model);
+            });
+
+            view.appendChild(li);
+        });
     }
 
     function addItem(e, input, container, items) {
         e.preventDefault();
         items.push({text: input.value, done: false});
-        populateList(container, items);
         localStorage.setItem('items', JSON.stringify(items));
+        renderView(container, items);
     }
 
     const addItems = document.querySelector('.add-items'),
-        itemInput = addItems.querySelector(`input[name="item"]`);
-    const itemsList = document.querySelector('.plates');
-    const items = JSON.parse(localStorage.getItem('items')) || [];
+        itemInput = addItems.querySelector(`input[name="item"]`),
+        itemsList = document.querySelector('.plates'),
+        items = JSON.parse(localStorage.getItem('items')) || [];
 
     addItems.addEventListener('submit', e => addItem(e, itemInput, itemsList, items));
 
-    populateList(itemsList, items);
+    renderView(itemsList, items);
 
 </script>
 
