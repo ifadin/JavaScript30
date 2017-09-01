@@ -1,40 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Mouse Shadow</title>
+    <meta charset="UTF-8">
+    <title>Mouse Shadow</title>
 </head>
 <body>
 
-  <div class="hero">
+<div class="hero">
     <h1 contenteditable>🔥WOAH!</h1>
-  </div>
+</div>
 
-  <style>
-  html {
-    color:black;
-    font-family: sans-serif;
-  }
+<style>
+    html {
+        color: black;
+        font-family: sans-serif;
+    }
 
-  body {
-    margin: 0;
-  }
+    body {
+        margin: 0;
+    }
 
-  .hero {
-    min-height: 100vh;
-    display:flex;
-    justify-content: center;
-    align-items: center;
-    color:black;
-  }
+    .hero {
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: cornflowerblue;
+    }
 
-  h1 {
-    text-shadow: 10px 10px 0 rgba(0,0,0,1);
-    font-size: 100px;
-  }
-  </style>
+    h1 {
+        text-shadow: 5px 5px 0 rgba(0, 0, 0, 0.7);
+        font-size: 100px;
+    }
+</style>
 
 <script>
+    function moveShadow(e, element) {
+        const [shadowDefaultX, shadowDefaultY, shadowMaxX, shadowMaxY] = [5, 5, 15, 15],
+            {top: top, bottom: bottom, left: left, right: right} = element.getBoundingClientRect(),
+            roundWith = (v, max) =>
+                v > 0 && v > max ? max :
+                    v < 0 && v < -max ? -max :
+                        v,
+            inElementRectangleX = (el) =>
+                left < e.clientX && e.clientX < right,
+            inElementRectangleY = (el) =>
+                top < e.clientY && e.clientY < bottom,
+            getCursorOffsetX = (el) =>
+                e.clientX < left ? e.clientX - left :
+                    e.clientX > right ? e.clientX - right : shadowDefaultX,
+            getCursorOffsetY = (el) =>
+                e.clientY < top ? e.clientY - top :
+                    e.clientY > bottom ? e.clientY - bottom : shadowDefaultY,
+            shadowX = inElementRectangleX(element) ?
+                shadowDefaultX :
+                roundWith(getCursorOffsetX(element), shadowMaxX),
+            shadowY = inElementRectangleY(element) ?
+                shadowDefaultY :
+                roundWith(getCursorOffsetY(element), shadowMaxY);
+
+        return element.style.textShadow = `${shadowX}px ${shadowY}px 0 rgba(0,0,0,0.17)`;
+    }
+
+    const textBlock = document.querySelector(`.hero h1`);
+
+    document.addEventListener('mousemove', e => moveShadow(e, textBlock));
+
 </script>
 </body>
 </html>

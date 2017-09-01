@@ -184,9 +184,9 @@
     }
 
     const images = document.querySelectorAll(`.slide-in`),
-        checkImages = _.debounce(() => images.forEach(slideIn), 50);
+        slideInImages = _.debounce(() => images.forEach(slideIn), 50);
 
-    window.addEventListener('scroll', checkImages)
+    window.addEventListener('scroll', slideInImages)
 
 </script>
 
