@@ -36,28 +36,19 @@
 
 <script>
     function moveShadow(e, element) {
-        const [shadowDefaultX, shadowDefaultY, shadowMaxX, shadowMaxY] = [5, 5, 15, 15],
-            {top: top, bottom: bottom, left: left, right: right} = element.getBoundingClientRect(),
-            roundWith = (v, max) =>
-                v > 0 && v > max ? max :
-                    v < 0 && v < -max ? -max :
-                        v,
-            inElementRectangleX = (el) =>
-                left < e.clientX && e.clientX < right,
-            inElementRectangleY = (el) =>
-                top < e.clientY && e.clientY < bottom,
+        const [shadowMaxX, shadowMaxY] = [15, 15],
+            {top: top, left: left, height: height, width: width} =
+                element.getBoundingClientRect(),
+            scaleShadowOffset = (offs, scaleMax, shadowMax) =>
+                Math.abs(offs) > scaleMax ?
+                    Math.sign(offs) * shadowMax :
+                    shadowMax * offs / scaleMax,
             getCursorOffsetX = (el) =>
-                e.clientX < left ? e.clientX - left :
-                    e.clientX > right ? e.clientX - right : shadowDefaultX,
+                e.clientX - (left + Math.floor(width / 2)),
             getCursorOffsetY = (el) =>
-                e.clientY < top ? e.clientY - top :
-                    e.clientY > bottom ? e.clientY - bottom : shadowDefaultY,
-            shadowX = inElementRectangleX(element) ?
-                shadowDefaultX :
-                roundWith(getCursorOffsetX(element), shadowMaxX),
-            shadowY = inElementRectangleY(element) ?
-                shadowDefaultY :
-                roundWith(getCursorOffsetY(element), shadowMaxY);
+                e.clientY - (top + Math.floor(height / 2)),
+            shadowX = scaleShadowOffset(getCursorOffsetX(element), width, shadowMaxX),
+            shadowY = scaleShadowOffset(getCursorOffsetY(element), height, shadowMaxY);
 
         return element.style.textShadow = `${shadowX}px ${shadowY}px 0 rgba(0,0,0,0.17)`;
     }
