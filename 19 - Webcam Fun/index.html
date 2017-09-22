@@ -10,6 +10,8 @@
 <div class="photobooth">
     <div class="controls">
         <button onClick="takePhoto()">Take Photo</button>
+        <label for="chromaColor">Pick chroma key color:</label>
+        <input type="color" name="chromaColor" class="chroma_color">
         <!--       <div class="rgb">
                 <label for="rmin">Red Min:</label>
                 <input type="range" min=0 max=255 name="rmin">
@@ -34,7 +36,7 @@
 
     <div class="photobooth__inner">
         <div class="player__wrapper">
-            <video class="player"
+            <video class="player" controls
                    src="http://player.vimeo.com/external/85569724.sd.mp4?s=43df5df0d733011263687d20a47557e4"></video>
             <canvas class="webcam_chroma"></canvas>
         </div>
