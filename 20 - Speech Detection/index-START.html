@@ -1,60 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Speech Detection</title>
+    <meta charset="UTF-8">
+    <title>Speech Detection</title>
 </head>
 <body>
 
-  <div class="words" contenteditable>
-  </div>
+<div class="words" contenteditable>
+</div>
 
 <script>
-  window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
+    function random(min, max) {
+        min = Math.ceil(min);
+        max = Math.floor(max);
+
+        // inclusive min and max
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function RandomWordsGenerator() {
+        const words = ['some', 'rabbit', 'blue', 'unicorn', 'runs', 'fast', 'The', 'interface', 'of', 'the'];
+
+        return {get: () => words[random(0, words.length - 1)]};
+    }
+
+    function RandomSpeechResultsEmitter(handler, generator) {
+        const getRandomEvent = () => {
+                const event = new CustomEvent('result');
+                event.results = [[{transcript: generator.get()}]];
+                return event;
+            },
+            dispatch = () => handler.dispatchEvent(getRandomEvent()),
+            start = () => {
+                dispatch();
+                const t = setTimeout(() => {
+                    start();
+                    clearTimeout(t);
+                }, random(2000, 5000))
+            }
+        ;
+
+        return {
+            get: getRandomEvent,
+            dispatch: dispatch,
+            start: start
+        };
+    }
+
+    function updateParagraph(p, text) {
+        p.textContent = `${p.textContent} ${text}`;
+    }
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition,
+        recognition = new SpeechRecognition(),
+        textBlock = document.querySelector(`.words`),
+        generator = new RandomWordsGenerator(),
+        emitter = new RandomSpeechResultsEmitter(recognition, generator);
+
+    recognition.interimResults = true;
+
+    emitter.start();
+
+    let p = document.createElement('p');
+    textBlock.appendChild(p);
+
+    recognition.addEventListener('result', e => {
+        const transcript = Array.from(e.results)
+            .map(result => result[0])
+            .map(result => result.transcript)
+            .join('');
+
+        updateParagraph(p, transcript);
+
+        if (e.results[0].isFinal) {
+            p = document.createElement('p');
+            textBlock.appendChild(p);
+        }
+    });
+
+    recognition.addEventListener('end', recognition.start);
+
+    recognition.start();
 
 </script>
 
 
-  <style>
+<style>
     html {
-      font-size: 10px;
+        font-size: 10px;
     }
 
     body {
-      background:#ffc600;
-      font-family: 'helvetica neue';
-      font-weight: 200;
-      font-size: 20px;
+        background: #ffc600;
+        font-family: 'helvetica neue';
+        font-weight: 200;
+        font-size: 20px;
     }
 
     .words {
-      max-width:500px;
-      margin:50px auto;
-      background:white;
-      border-radius:5px;
-      box-shadow:10px 10px 0 rgba(0,0,0,0.1);
-      padding:1rem 2rem 1rem 5rem;
-      background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
-      background-size: 100% 3rem;
-      position: relative;
-      line-height:3rem;
+        max-width: 500px;
+        margin: 50px auto;
+        background: white;
+        border-radius: 5px;
+        box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.1);
+        padding: 1rem 2rem 1rem 5rem;
+        background: -webkit-gradient(linear, 0 0, 0 100%, from(#d9eaf3), color-stop(4%, #fff)) 0 4px;
+        background-size: 100% 3rem;
+        position: relative;
+        line-height: 3rem;
     }
+
     p {
-      margin: 0 0 3rem;
+        margin: 0 0 3rem;
     }
 
     .words:before {
-      content: '';
-      position: absolute;
-      width: 4px;
-      top: 0;
-      left: 30px;
-      bottom: 0;
-      border: 1px solid;
-      border-color: transparent #efe4e4;
+        content: '';
+        position: absolute;
+        width: 4px;
+        top: 0;
+        left: 30px;
+        bottom: 0;
+        border: 1px solid;
+        border-color: transparent #efe4e4;
     }
-  </style>
+</style>
 
 </body>
 </html>
