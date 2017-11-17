@@ -87,15 +87,15 @@ nav a {
     text-transform: uppercase;
 }
 
-body.fixed-nav nav {
+.fixed-nav nav {
     position: fixed;
     box-shadow: 0 5px 0 rgba(0, 0, 0, 0.1);
 }
 
-body.fixed-nav li.logo {
+.fixed-nav li.logo {
     max-width: 999px; /* cannot transition just width */
 }
 
-body.fixed-nav .site-wrap {
+.fixed-nav .site-wrap {
     transform: scale(1);
 }
