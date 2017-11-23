@@ -36,8 +36,8 @@
 
 <script>
     function dragStart(event, slider, state) {
-        state.initalMouseX = event.clientX;
-        state.initalSliderX = slider.scrollLeft;
+        state.initialMouseX = event.clientX;
+        state.initialSliderX = slider.scrollLeft;
         state.isDragging = true;
 
         return state;
@@ -51,16 +51,16 @@
 
     function slide(event, slider, state) {
         if (!state.isDragging) return;
-        const diff = state.initalMouseX - event.clientX;
+        const diff = state.initialMouseX - event.clientX;
 
-        slider.scrollLeft = state.initalSliderX + diff * 2.5;
+        slider.scrollLeft = state.initialSliderX + diff * 2.5;
     }
 
     const slider = document.querySelector(`.items`),
         state = {
             isDragging: false,
-            initalMouseX: 0,
-            initalSliderX: 0
+            initialMouseX: 0,
+            initialSliderX: 0
         }
     ;
 
