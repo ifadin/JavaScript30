@@ -1,20 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Video Speed Scrubber</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>Video Speed Scrubber</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="wrapper">
-    <video class="flex" width="765" height="430" src="https://www.dropbox.com/s/nf6jfkwck1glsyo/12%20-%20flex-wrapping-and-columns.mp4?dl=1" loop controls></video>
+<div class="wrapper">
+    <video width="765" height="430"
+           src="https://player.vimeo.com/external/194837908.sd.mp4?s=c350076905b78c67f74d7ee39fdb4fef01d12420&profile_id=164"
+           loop
+           controls></video>
     <div class="speed">
-      <div class="speed-bar">1×</div>
+        <div class="speed-bar">1×</div>
     </div>
-  </div>
+</div>
 
 <script>
+
+    function dragStart(state) {
+        state.isDragging = true;
+    }
+
+    function dragStop(state) {
+        state.isDragging = false;
+    }
+
+    function adjustPlayback(event, scale, bar, video, state) {
+        if (!state.isDragging) return;
+
+        event.preventDefault();
+
+        const
+            minRate = 0.4, maxRate = 3,
+            stickToEdge = (value) => 99.0 < value * 100
+                ? 1.0
+                : value * 100 < 1.0 ? 0 : value,
+            sliderProgress = stickToEdge((event.pageY - scale.offsetTop) / scale.offsetHeight),
+            playbackRate = minRate + sliderProgress * (maxRate - minRate)
+        ;
+
+        bar.style.height = `${sliderProgress * 100}%`;//TODO: min-height?
+        bar.textContent = `${playbackRate.toFixed(2)}x`;
+
+        video.playbackRate = playbackRate;
+    }
+
+    const
+        video = document.querySelector(`video`),
+        scale = document.querySelector(`.speed`),
+        bar = document.querySelector(`.speed-bar`),
+        state = {isDragging: false}
+    ;
+
+    scale.addEventListener('mousedown', e => dragStart(state));
+    scale.addEventListener('mouseup', e => dragStop(state));
+    scale.addEventListener('mouseleave', e => dragStop(state));
+    scale.addEventListener('mousemove', e => adjustPlayback(e, scale, bar, video, state));
+
 </script>
 </body>
 </html>
