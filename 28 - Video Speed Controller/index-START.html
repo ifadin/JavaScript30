@@ -41,7 +41,7 @@
             playbackRate = minRate + sliderProgress * (maxRate - minRate)
         ;
 
-        bar.style.height = `${sliderProgress * 100}%`;//TODO: min-height?
+        bar.style.height = `${sliderProgress * 100}%`;
         bar.textContent = `${playbackRate.toFixed(2)}x`;
 
         video.playbackRate = playbackRate;
